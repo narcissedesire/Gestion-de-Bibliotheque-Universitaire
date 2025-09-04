@@ -4,6 +4,8 @@ import {
   Like,
   ObjectLiteral,
   Repository,
+  FindManyOptions,
+  ILike, // Ajout pour supporter plus d'options
 } from 'typeorm';
 
 export interface PaginationParams {
@@ -26,6 +28,7 @@ export interface PaginatedResult<T> {
 export interface SearchField {
   field: string;
   isEnum?: boolean;
+  // isBoolean?: boolean;
 }
 
 export async function paginate<T extends ObjectLiteral>(
@@ -33,6 +36,7 @@ export async function paginate<T extends ObjectLiteral>(
   params: PaginationParams,
   searchFields: SearchField[],
   where?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
+  extraOptions: Partial<FindManyOptions<T>> = {}, // Nouveau paramètre pour relations, etc.
 ): Promise<PaginatedResult<T>> {
   const page = Math.max(1, params.page || 1);
   const limit = Math.max(1, params.limit || 10);
@@ -47,13 +51,23 @@ export async function paginate<T extends ObjectLiteral>(
   const searchConditions: FindOptionsWhere<T>[] = [];
 
   if (params.search) {
-    searchFields
-      .filter((sf) => !sf.isEnum)
-      .forEach((sf) => {
+    searchFields.forEach((sf) => {
+      if (sf.isEnum) return;
+
+      if (sf.field === 'disponible') {
+        // recherche dispo oui/non
+        if (params.search.toLowerCase() === 'true') {
+          searchConditions.push({ [sf.field]: true } as any);
+        } else if (params.search.toLowerCase() === 'false') {
+          searchConditions.push({ [sf.field]: false } as any);
+        }
+      } else {
+        // recherche texte insensible à la casse
         searchConditions.push({
-          [sf.field]: Like(`%${params.search}%`),
+          [sf.field]: ILike(`%${params.search}%`),
         } as unknown as FindOptionsWhere<T>);
-      });
+      }
+    });
   }
 
   const typeCondition =
@@ -91,14 +105,12 @@ export async function paginate<T extends ObjectLiteral>(
     finalWhere = where;
   }
 
-  console.log('searchConditions:', JSON.stringify(searchConditions, null, 2));
-  console.log('finalWhere:', JSON.stringify(finalWhere, null, 2));
-
   const [data, total] = await repository.findAndCount({
     where: finalWhere,
     skip,
     take: limit,
     order,
+    ...extraOptions, // Applique les options supplémentaires comme relations
   });
 
   const totalPages = Math.ceil(total / limit);

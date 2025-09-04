@@ -128,6 +128,8 @@ export class UsersService {
   }
 
   async afficheUserSansFiltre() {
-    return this.userRepository.find();
+    const data = this.userRepository.find();
+    console.log('data avao : ', data);
+    return data;
   }
 }

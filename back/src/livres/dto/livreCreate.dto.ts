@@ -8,3 +8,8 @@ export class LivreCreateDto {
   sujet?: string;
   periodicite?: string;
 }
+
+export enum booleanDispo {
+  disponible = 'true',
+  indisponible = 'false',
+}

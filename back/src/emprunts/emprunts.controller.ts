@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
 import { EmpruntsService } from './emprunts.service';
 import { ActiveUser, DecorRole } from 'src/decorators/active-user.decorator';
-import { typeUser } from 'src/users/model/users.model';
+import { typeUser, User } from 'src/users/model/users.model';
 import { AccessTokenGuard } from 'src/iam/access-token/access-token.guard';
 import { AuthorizationGuard } from 'src/iam/authorization/authorization.guard';
 
@@ -11,12 +11,9 @@ export class EmpruntsController {
 
   @Post()
   @UseGuards(AccessTokenGuard, AuthorizationGuard)
-  @DecorRole(typeUser.ETUDIANT, typeUser.PROFESSEUR)
-  createEmprunt(
-    @Body('livreId') livreId: string,
-    @ActiveUser('id') userId: string,
-  ) {
-    return this.empruntsService.createEmprunt(livreId, userId);
+  @DecorRole(typeUser.ETUDIANT, typeUser.PROFESSEUR, typeUser.ADMIN)
+  createEmprunt(@Body('livreId') livreId: string, @ActiveUser() user: User) {
+    return this.empruntsService.createEmprunt(livreId, user);
   }
 
   @Get('/historique')

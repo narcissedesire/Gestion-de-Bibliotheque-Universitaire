@@ -27,14 +27,12 @@ export class AccessTokenGuard implements CanActivate {
       'isPublic',
       context.getHandler(),
     );
-    console.log('isPublic:', isPublic);
 
     if (isPublic) {
       return true;
     }
 
     const token = this.extractTokenFromHeader(request);
-    console.log('Token:', token);
     if (!token) {
       throw new UnauthorizedException('Access token is missing');
     }
@@ -44,11 +42,8 @@ export class AccessTokenGuard implements CanActivate {
         token,
         this.jwtConfiguration,
       );
-      console.log('Payload JWT:', payload);
       request['user'] = payload;
-      console.log('request.user défini:', request['user']);
     } catch (err) {
-      console.log('Erreur JWT:', err.message);
       throw new UnauthorizedException('Invalid token');
     }
     return true;

@@ -20,7 +20,7 @@ export class ReservationsService {
 
   async createReservation(
     livreId: string,
-    userId: string,
+    user: User,
     dureePrevue: number = 21,
     joursAvantRecuperation: number = 4,
   ) {
@@ -33,10 +33,6 @@ export class ReservationsService {
       throw new BadRequestException('Livre non trouvé');
     }
 
-    // Trouver l'utilisateur
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
     if (!user) {
       throw new BadRequestException('Utilisateur non trouvé');
     }
@@ -44,7 +40,7 @@ export class ReservationsService {
     // Vérifier si l'utilisateur a déjà une réservation pour ce livre
     const hasExistingReservation = livre.reservations.some(
       (res) =>
-        res.user.id === userId &&
+        res.user.id === user.id &&
         (res.status === StatusReservation.EN_ATTENTE ||
           res.status === StatusReservation.ACTIVE),
     );
@@ -80,7 +76,6 @@ export class ReservationsService {
       user,
       status,
       position_attente: positionAttente,
-      date_reservation: new Date(),
       date_recuperation_prevue: dateRecuperationPrevue,
       duree_prevue: dureePrevue, // Par exemple, 21 jours pour 3 semaines
     });

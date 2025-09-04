@@ -27,35 +27,41 @@ export class LivresController {
   @UseGuards(AccessTokenGuard, AuthorizationGuard)
   @DecorRole(typeUser.ADMIN)
   createLivres(@Body() livre: LivreCreateDto) {
-    console.log('donne du front : ' + JSON.stringify(livre));
     return this.livreService.createLivres(livre);
   }
 
   @Get('/findAll')
   @UseGuards(AccessTokenGuard, AuthorizationGuard)
   @DecorRole(typeUser.ADMIN, typeUser.ETUDIANT, typeUser.PROFESSEUR)
-  findAllLivres(@Query() query: PaginationParams & { type: LivreGere }) {
+  findAllLivres(
+    @Query()
+    query: PaginationParams & { type?: LivreGere; disponible?: string },
+  ) {
     if (query.page && isNaN(Number(query.page))) {
       throw new BadRequestException('La page doit être un nombre');
     }
-    console.log('page :', query.page);
-    console.log('Limit : ', query.limit);
     if (query.limit && isNaN(Number(query.limit))) {
       throw new BadRequestException('La limite doit être un nombre');
     }
     if (query.type && !Object.values(LivreGere).includes(query.type)) {
-      throw new BadRequestException("Type d'événement invalide");
+      throw new BadRequestException('Type de livre invalide');
     }
+
+    let disponible: boolean | undefined;
+    if (query.disponible === 'true') disponible = true;
+    if (query.disponible === 'false') disponible = false;
+
     return this.livreService.findAllLivres(
       {
         page: query.page ? Number(query.page) : 1,
         limit: query.limit ? Number(query.limit) : 10,
-        search: query.search || '',
+        search: query.search?.toLowerCase() || '',
         orderBy: query.orderBy || 'titre',
         orderDirection: query.orderDirection,
         type: query.type,
       },
       query.type,
+      disponible,
     );
   }
 

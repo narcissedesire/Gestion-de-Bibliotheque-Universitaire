@@ -8,9 +8,26 @@ import CardTableLivre from "../../components/livre/CardTableLivre";
 export default function Livre() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterGenre, setFilterGenre] = useState("");
-  const { allLivreSansFiltre, livreAll } = useLibrairie();
+  const {
+    allLivreSansFiltre,
+    livreAll,
+    fetchLivreAll,
+    fetchLivreAllSansFiltre,
+    limit,
+    setLimit,
+    page,
+    setPage,
+    totalPages,
+    addLivre,
+    updateLivre,
+    deleteLivre,
+  } = useLibrairie();
 
-  console.log("All livre de merde : ", allLivreSansFiltre);
+  // Charger les livres paginés et les livres sans filtre pour les stats
+  useEffect(() => {
+    fetchLivreAll();
+    fetchLivreAllSansFiltre();
+  }, [fetchLivreAll, fetchLivreAllSansFiltre, page, limit, filterGenre]);
 
   const [stats, setStats] = useState({
     Roman: { valeur: 0, desc: "Émotion, intrigue, fiction" },
@@ -19,7 +36,7 @@ export default function Livre() {
     Autre: { valeur: 0, desc: "Autre chose" },
   });
 
-  // ✅ Recalcule stats quand livreAll change
+  // Recalcule les stats quand allLivreSansFiltre change
   useEffect(() => {
     const roman =
       allLivreSansFiltre?.filter((livre) => livre.genre === "Roman").length ||
@@ -48,16 +65,27 @@ export default function Livre() {
 
   const handleFilter = (genre) => {
     setFilterGenre(genre);
+    setPage(1); // Réinitialiser la page uniquement lors du changement de filtre
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
-  const handleSaveBook = (newBook) => {
-    console.log("Nouveau livre ajouté :", newBook);
-    setIsModalOpen(false);
-    // ⚠️ Pas besoin de modifier stats ici, car il sera recalculé via livreAll
+  const handleSaveBook = async (newBook) => {
+    try {
+      await addLivre(newBook);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du livre :", error);
+      toast.error("Impossible d'ajouter le livre.");
+    }
+  };
+
+  const handleLimitChange = (e) => {
+    const newLimit = parseInt(e.target.value, 10);
+    setLimit(newLimit);
+    setPage(1); // Réinitialiser la page uniquement lors du changement de limit
   };
 
   const totalLivres = Object.values(stats).reduce(
@@ -98,7 +126,11 @@ export default function Livre() {
           />
         ))}
       </div>
-      <CardTableLivre filterGenre={filterGenre} />
+      <CardTableLivre
+        filterGenre={filterGenre}
+        updateLivre={updateLivre}
+        deleteLivre={deleteLivre}
+      />
       {isModalOpen && (
         <ModalAjoutLivre
           onClose={handleCloseModal}

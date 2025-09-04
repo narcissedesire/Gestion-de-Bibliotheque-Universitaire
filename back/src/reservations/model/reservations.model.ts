@@ -19,9 +19,6 @@ export class Reservation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'date', nullable: false })
-  date_reservation: Date;
-
   @Column({ type: 'date', nullable: true }) // Date à laquelle l'utilisateur prévoit de récupérer
   date_recuperation_prevue: Date;
 
@@ -39,7 +36,7 @@ export class Reservation {
   position_attente: number;
 
   @CreateDateColumn()
-  createdAt: Date;
+  date_reservation: Date;
 
   @ManyToOne(() => User, (user) => user.reservations, { onDelete: 'CASCADE' })
   user: User;

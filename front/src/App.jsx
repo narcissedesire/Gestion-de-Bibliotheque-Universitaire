@@ -13,6 +13,7 @@ import Sidebar from "./components/Sidebar";
 import AdminLayout from "./components/AdminLayout";
 import { useState } from "react";
 import { LibrairieProvider } from "./context/LibrairieContext";
+import Catalogue from "./pages/livre/Catalogue";
 
 export default function App() {
   const [openSidebar, setOpenSidebar] = useState(true);
@@ -24,6 +25,7 @@ export default function App() {
           <Routes>
             <Route path="/inscription" element={<Inscription />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Catalogue />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
 
             {/* Routes Admin protégées */}

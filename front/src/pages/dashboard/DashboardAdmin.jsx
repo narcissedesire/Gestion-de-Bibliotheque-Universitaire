@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { GoBook } from "react-icons/go";
 import { IoMdHeartEmpty } from "react-icons/io";
 import { CiClock2 } from "react-icons/ci";
@@ -8,23 +8,46 @@ import { AlertNotification, HeaderDash } from "../../components/card";
 import { useLibrairie } from "../../context/LibrairieContext";
 
 export default function DashboardAdmin() {
-  const { allLivreSansFiltre, emprunts, reservationsSansFiltre } =
-    useLibrairie();
-  console.log("allLivreSansFiltre : ", allLivreSansFiltre);
+  const {
+    allLivreSansFiltre,
+    fetchLivreAllSansFiltre,
+    empruntsAll,
+    reservationsSansFiltre,
+    token,
+    fetchReservationsSansFiltre,
+    fetchAllEmprunts,
+    user,
+    getLivrePopulaire,
+    fetchUserSansFiltre,
+  } = useLibrairie();
+
+  useEffect(() => {
+    fetchLivreAllSansFiltre();
+    fetchAllEmprunts();
+    getLivrePopulaire();
+    fetchReservationsSansFiltre();
+    fetchUserSansFiltre();
+  }, [token, user]);
+
+  console.log("Reservation : ", reservationsSansFiltre);
+
   const livreDispo = allLivreSansFiltre?.filter(
     (dispo) => dispo.disponible === true
   ).length;
 
-  const empruntRetard = emprunts.filter(
-    (retard) => retard.date_emprunt > retard.date_retour_prevue
+  const empruntRetard = empruntsAll.filter(
+    (retard) =>
+      retard.status === "En cours" && // encore non retourné
+      new Date() > new Date(retard.date_retour_prevue)
   ).length;
 
   const reservationActive = reservationsSansFiltre.filter(
-    (reserve) => reserve.status === "Active"
+    (reserve) => reserve.status === "En attente"
   ).length;
+  console.log("nombre de reservation : ", reservationActive);
 
-  const empruntActif = emprunts.filter(
-    (actif) => actif.status === "EN_COURS"
+  const empruntActif = empruntsAll.filter(
+    (actif) => actif.status === "En cours"
   ).length;
   // console.log("mdande :", empruntRetard);
   return (

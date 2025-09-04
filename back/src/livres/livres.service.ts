@@ -23,16 +23,28 @@ export class LivresService {
     return this.livreRepository.save(newLivre);
   }
 
-  async findAllLivres(params: PaginationParams, type: LivreGere) {
+  async findAllLivres(
+    params: PaginationParams,
+    type?: LivreGere,
+    disponible?: boolean,
+  ) {
     const searchFields: SearchField[] = [
       { field: 'titre' },
-      { field: 'genre', isEnum: true },
       { field: 'auteur' },
+      { field: 'genre', isEnum: true },
     ];
 
-    const where = type ? { genre: type } : undefined;
+    let where: any = {};
+    if (type) {
+      where.genre = type;
+    }
+    if (disponible !== undefined) {
+      where.disponible = disponible;
+    }
 
-    return paginate<Livres>(this.livreRepository, params, searchFields, where);
+    return paginate<Livres>(this.livreRepository, params, searchFields, where, {
+      relations: ['emprunts', 'reservations'],
+    });
   }
 
   findAllLivresSansFiltre() {
@@ -40,14 +52,13 @@ export class LivresService {
   }
 
   async getLivresPopulaires(limit = 5) {
-    return this.livreRepository
+    const rows = await this.livreRepository
       .createQueryBuilder('livre')
       .leftJoin('livre.emprunts', 'emprunts')
       .leftJoin('livre.reservations', 'reservations')
       .select([
         'livre.id AS id',
         'livre.titre AS titre',
-        'livre.auteur AS auteur',
         'COUNT(DISTINCT emprunts.id) AS empruntCount',
         'COUNT(DISTINCT reservations.id) AS reservationCount',
         '(COUNT(DISTINCT emprunts.id) + COUNT(DISTINCT reservations.id)) AS popularity',
@@ -56,6 +67,14 @@ export class LivresService {
       .orderBy('popularity', 'DESC')
       .limit(limit)
       .getRawMany();
+
+    return rows.map((row) => ({
+      id: row.id,
+      titre: row.titre,
+      empruntCount: Number(row.empruntCount),
+      reservationCount: Number(row.reservationCount),
+      popularity: Number(row.popularity),
+    }));
   }
 
   async findLivreById(id: string) {
@@ -79,7 +98,6 @@ export class LivresService {
         where: { id: id },
         relations: ['emprunts', 'reservations'],
       });
-      console.log(livre);
       if (!livre) {
         throw new BadRequestException("Le livre n'existe pas");
       }

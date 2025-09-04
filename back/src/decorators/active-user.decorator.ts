@@ -21,7 +21,6 @@ export const ActiveUser = createParamDecorator(
   async (field: keyof JwtPayload | undefined, ctx: ExecutionContext) => {
     const request = await ctx.switchToHttp().getRequest();
     const user = request['user'];
-    console.log('Utilisateur dans request:'); // Ajoutez ce log
     if (!user) {
       throw new UnauthorizedException('Aucun utilisateur authentifié');
     }

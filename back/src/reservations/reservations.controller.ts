@@ -4,7 +4,7 @@ import { Reservation } from './model/reservations.model';
 import { AccessTokenGuard } from 'src/iam/access-token/access-token.guard';
 import { AuthorizationGuard } from 'src/iam/authorization/authorization.guard';
 import { ActiveUser, DecorRole } from 'src/decorators/active-user.decorator';
-import { typeUser } from 'src/users/model/users.model';
+import { typeUser, User } from 'src/users/model/users.model';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -12,14 +12,12 @@ export class ReservationsController {
 
   @Post()
   @UseGuards(AccessTokenGuard, AuthorizationGuard)
-  @DecorRole(typeUser.ETUDIANT, typeUser.PROFESSEUR)
+  @DecorRole(typeUser.ETUDIANT, typeUser.PROFESSEUR, typeUser.ADMIN)
   async createReservation(
     @Body('livreId') livreId: string,
-    @ActiveUser() user,
+    @ActiveUser() user: User,
   ) {
-    console.log('LivreId: ' + livreId);
-    console.log('user: ' + user.id);
-    return this.reservationsService.createReservation(livreId, user.id);
+    return this.reservationsService.createReservation(livreId, user);
   }
 
   @Get('/affiche-sans-filtres')

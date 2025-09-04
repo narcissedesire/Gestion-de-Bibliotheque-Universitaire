@@ -3,11 +3,11 @@ import "./style.css";
 
 export default function Loading() {
   return (
-    <div className="container_loading">
-      <div className="center">
+    <span className="container_loading">
+      <span className="center">
         <div className="text">LOADING</div>
         <div className="ring"></div>
-      </div>
-    </div>
+      </span>
+    </span>
   );
 }
