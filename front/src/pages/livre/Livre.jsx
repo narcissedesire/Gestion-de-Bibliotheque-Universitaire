@@ -23,7 +23,6 @@ export default function Livre() {
     deleteLivre,
   } = useLibrairie();
 
-  // Charger les livres paginés et les livres sans filtre pour les stats
   useEffect(() => {
     fetchLivreAll();
     fetchLivreAllSansFiltre();
@@ -36,7 +35,6 @@ export default function Livre() {
     Autre: { valeur: 0, desc: "Autre chose" },
   });
 
-  // Recalcule les stats quand allLivreSansFiltre change
   useEffect(() => {
     const roman =
       allLivreSansFiltre?.filter((livre) => livre.genre === "Roman").length ||
@@ -59,19 +57,12 @@ export default function Livre() {
     });
   }, [allLivreSansFiltre]);
 
-  const handleAddClick = () => {
-    setIsModalOpen(true);
-  };
-
+  const handleAddClick = () => setIsModalOpen(true);
   const handleFilter = (genre) => {
     setFilterGenre(genre);
-    setPage(1); // Réinitialiser la page uniquement lors du changement de filtre
+    setPage(1);
   };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
+  const handleCloseModal = () => setIsModalOpen(false);
   const handleSaveBook = async (newBook) => {
     try {
       await addLivre(newBook);
@@ -81,11 +72,10 @@ export default function Livre() {
       toast.error("Impossible d'ajouter le livre.");
     }
   };
-
   const handleLimitChange = (e) => {
     const newLimit = parseInt(e.target.value, 10);
     setLimit(newLimit);
-    setPage(1); // Réinitialiser la page uniquement lors du changement de limit
+    setPage(1);
   };
 
   const totalLivres = Object.values(stats).reduce(
@@ -94,14 +84,14 @@ export default function Livre() {
   );
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in p-4">
       <HeaderDash
         titre="Gestion des Livres"
         desc={`${totalLivres} livre(s) sur ${allLivreSansFiltre.length}`}
       >
         <button
           onClick={handleAddClick}
-          className="border px-2 py-1 rounded-sm cursor-pointer flex items-center gap-1.5 hover:bg-gray-200 transition duration-300"
+          className="border px-2 py-1 rounded-sm flex items-center gap-1.5 hover:bg-gray-200 transition duration-300 sm:px-3 sm:py-2"
         >
           <FaPlus />
           Ajouter
@@ -113,16 +103,13 @@ export default function Livre() {
             key={genre}
             titre={genre}
             icon={
-              <img
-                src={`/images/${genre.toLowerCase()}.png`}
-                className="text-[16px] w-6"
-              />
+              <img src={`/images/${genre.toLowerCase()}.png`} className="w-6" />
             }
             valeur={valeur}
             desc={desc}
             couleur={valeur < 5}
             onClick={() => handleFilter(genre)}
-            className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
+            className="cursor-pointer hover:shadow-lg transition-shadow"
           />
         ))}
       </div>

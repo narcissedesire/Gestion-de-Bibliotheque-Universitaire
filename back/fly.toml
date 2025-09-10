@@ -1,0 +1,9 @@
+app = "gestion-bibliotheque-app"
+primary_region = "sin"  # Région Singapour, proche de aws-1-ap-southeast-1.pooler.supabase.com
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0

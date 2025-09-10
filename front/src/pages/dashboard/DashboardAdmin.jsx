@@ -29,8 +29,6 @@ export default function DashboardAdmin() {
     fetchUserSansFiltre();
   }, [token, user]);
 
-  console.log("Reservation : ", reservationsSansFiltre);
-
   const livreDispo = allLivreSansFiltre?.filter(
     (dispo) => dispo.disponible === true
   ).length;
@@ -44,45 +42,45 @@ export default function DashboardAdmin() {
   const reservationActive = reservationsSansFiltre.filter(
     (reserve) => reserve.status === "En attente"
   ).length;
-  console.log("nombre de reservation : ", reservationActive);
 
   const empruntActif = empruntsAll.filter(
     (actif) => actif.status === "En cours"
   ).length;
-  // console.log("mdande :", empruntRetard);
+
+  // DashboardAdmin.jsx (extrait)
   return (
     <div>
       <HeaderDash
         titre="Tableau de bord"
         desc="Vue d'ensemble des activités et performances"
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <AlertNotification
           titre="Total Livres"
-          icon={<GoBook className="text-[16px]" />}
+          icon={<GoBook className="text-lg" />}
           valeur={allLivreSansFiltre?.length || 0}
           desc={`${livreDispo} disponibles`}
         />
         <AlertNotification
           titre="Retards"
-          icon={<CiClock2 className="text-[16px]" />}
+          icon={<CiClock2 className="text-lg" />}
           valeur={empruntRetard}
-          desc="Saction"
+          desc="Sanction"
         />
         <AlertNotification
           titre="Emprunts Actifs"
-          icon={<MdOutlineCalendarMonth className="text-[16px]" />}
+          icon={<MdOutlineCalendarMonth className="text-lg" />}
           valeur={empruntActif}
           desc=""
         />
         <AlertNotification
           titre="Réservations"
-          icon={<IoMdHeartEmpty className="text-[16px]" />}
+          icon={<IoMdHeartEmpty className="text-lg" />}
           valeur={reservationActive}
           desc="En attente"
         />
       </div>
-      <div className="">
+      <div className="mt-6">
         <Statistique />
       </div>
     </div>

@@ -1,13 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Emprunts, statusType } from './model/emprunts.model';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/model/users.model';
 import { Livres } from 'src/livres/model/livres.model';
-import {
-  Reservation,
-  StatusReservation,
-} from 'src/reservations/model/reservations.model';
+import { Reservation } from 'src/reservations/model/reservations.model';
 
 @Injectable()
 export class EmpruntsService {
@@ -164,8 +165,33 @@ export class EmpruntsService {
   async empruntUser(idUser: string) {
     const emprunt = await this.empruntsRepository.find({
       where: { user: { id: idUser } },
-      relations: ['user', 'livre'],
+      relations: ['livre'],
     });
     return emprunt;
+  }
+
+  async retournerLivre(empruntId: string) {
+    const emprunt = await this.empruntsRepository.findOne({
+      where: { id: empruntId },
+      relations: ['livre'], // pour récupérer le livre associé
+    });
+
+    if (!emprunt) {
+      throw new NotFoundException('Emprunt introuvable');
+    }
+
+    if (emprunt.date_retour_reelle) {
+      throw new BadRequestException('Le livre a déjà été retourné');
+    }
+
+    // Marquer l'emprunt comme retourné
+    emprunt.date_retour_reelle = new Date();
+    await this.empruntsRepository.save(emprunt);
+
+    // Rendre le livre à nouveau disponible
+    emprunt.livre.disponible = true;
+    await this.livresRepository.save(emprunt.livre);
+
+    return { message: 'Livre retourné avec succès', emprunt };
   }
 }

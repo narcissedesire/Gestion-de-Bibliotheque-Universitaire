@@ -50,24 +50,25 @@ export async function paginate<T extends ObjectLiteral>(
 
   const searchConditions: FindOptionsWhere<T>[] = [];
 
-  if (params.search) {
+  if (params.search && params.search.length >= 3) {
     searchFields.forEach((sf) => {
       if (sf.isEnum) return;
 
       if (sf.field === 'disponible') {
-        // recherche dispo oui/non
         if (params.search.toLowerCase() === 'true') {
           searchConditions.push({ [sf.field]: true } as any);
         } else if (params.search.toLowerCase() === 'false') {
           searchConditions.push({ [sf.field]: false } as any);
         }
       } else {
-        // recherche texte insensible à la casse
         searchConditions.push({
           [sf.field]: ILike(`%${params.search}%`),
         } as unknown as FindOptionsWhere<T>);
       }
     });
+  } else {
+    // Si moins de 3 lettres, on ignore la recherche
+    searchConditions.length = 0; // vide les conditions de recherche
   }
 
   const typeCondition =

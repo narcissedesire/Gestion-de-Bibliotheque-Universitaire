@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import NavIcon from "./NavIcon";
 import { useSidebar } from "../context/SidebarContext";
 
-export default function AdminLayout() {
+export default function ProfileLayout() {
   const { user } = useAuth();
   const { openSidebar, setOpenSidebar } = useSidebar();
   const [profile, setProfile] = useState(false);

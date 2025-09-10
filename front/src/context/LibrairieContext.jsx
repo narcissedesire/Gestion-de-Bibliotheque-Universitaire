@@ -1,17 +1,11 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { useAuth } from "./AuthContext";
 import { toast } from "react-toastify";
 
 const LibrairieContext = createContext();
 
 export function LibrairieProvider({ children }) {
-  const API_URL = "http://localhost:3000";
+  const API_URL = "http://localhost:5432";
 
   const [livreAll, setLivreAll] = useState([]);
   const [livrePopulaire, setLivrePopulaire] = useState([]);
@@ -32,6 +26,7 @@ export function LibrairieProvider({ children }) {
   const [genre, setGenre] = useState("");
   const [disponibilite, setDisponibilite] = useState("");
   const [message, setMessage] = useState();
+  const [reserveUser, setReserveUser] = useState([]);
 
   const { token, user } = useAuth();
 
@@ -139,7 +134,6 @@ export function LibrairieProvider({ children }) {
         throw new Error(`Erreur HTTP ${res.status}: ${errorText}`);
       }
       const data = await res.json();
-      console.log("Fetch LivreAll:", data);
       setLivreAll(Array.isArray(data) ? data : data.data || []);
       setTotalPages(Number(data.totalPages) || 1);
     } catch (error) {
@@ -343,7 +337,6 @@ export function LibrairieProvider({ children }) {
       if (!res.ok)
         throw new Error(`Erreur HTTP ${res.status}: ${await res.text()}`);
       const data = await res.json();
-      console.log("empruntsUser data:", data);
       setEmpruntsUser(Array.isArray(data) ? data : data.data || []);
     } catch (error) {
       console.error("Erreur lors du fetch des emprunts utilisateur :", error);
@@ -353,6 +346,58 @@ export function LibrairieProvider({ children }) {
       setLoading(false);
     }
   }, [token, user]);
+
+  const fetchReservesUser = useCallback(async () => {
+    if (!token || !user) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/reservations/reserve-users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok)
+        throw new Error(`Erreur HTTP ${res.status}: ${await res.text()}`);
+      const data = await res.json();
+      setReserveUser(Array.isArray(data) ? data : data.data || []);
+    } catch (error) {
+      console.error(
+        "Erreur lors du fetch des reservation utilisateur :",
+        error
+      );
+      toast.error("Erreur lors du chargement des reservation utilisateur");
+      setReserveUser([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [token, user]);
+
+  const returnLivre = useCallback(
+    async (id) => {
+      if (!token || !user) return;
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_URL}/emprunts/return-livre/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) {
+          throw new Error(`Erreur HTTP ${res.status}: ${await res.text()}`);
+        }
+        fetchEmpruntsUser();
+        // const retour = await res.json();
+      } catch (error) {
+        console.error("Erreur lors du retour du livre :", error);
+        toast.error("Erreur lors du retour du livre");
+      }
+    },
+    [token, user]
+  );
 
   const fetchAllEmprunts = useCallback(async () => {
     if (!token || !user) return;
@@ -455,6 +500,34 @@ export function LibrairieProvider({ children }) {
     [token, user]
   );
 
+  const annuleResevation = useCallback(
+    async (id) => {
+      if (!token || !user) return;
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${API_URL}/reservations/annule-reservation/${id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!res.ok) {
+          throw new Error(`Erreur HTTP ${res.status}: ${await res.text()}`);
+        }
+        fetchReservesUser();
+        // const retour = await res.json();
+      } catch (error) {
+        console.error("Erreur lors du retour du livre :", error);
+        toast.error("Erreur lors du retour du livre");
+      }
+    },
+    [token, user]
+  );
+
   const fetchReservationsSansFiltre = useCallback(async () => {
     if (!token || !user) return;
     setLoading(true);
@@ -496,6 +569,7 @@ export function LibrairieProvider({ children }) {
         updateLivre,
         deleteLivre,
         loading,
+        setLoading,
         page,
         limit,
         totalPages,
@@ -522,6 +596,11 @@ export function LibrairieProvider({ children }) {
         fetchReservationsSansFiltre,
         fetchUsers,
         fetchUserSansFiltre,
+        fetchEmpruntsUser,
+        returnLivre,
+        fetchReservesUser,
+        reserveUser,
+        annuleResevation,
       }}
     >
       {children}

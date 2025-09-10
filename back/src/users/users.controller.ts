@@ -2,9 +2,12 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
+  Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -16,7 +19,7 @@ import {
   Public,
 } from 'src/decorators/active-user.decorator';
 import { UserLoginDto } from './dto/userLogin.dto';
-import { typeUser } from './model/users.model';
+import { typeUser, User } from './model/users.model';
 import { AccessTokenGuard } from 'src/iam/access-token/access-token.guard';
 import { AuthorizationGuard } from 'src/iam/authorization/authorization.guard';
 import { PaginationParams } from 'src/utils/pagination';
@@ -85,5 +88,15 @@ export class UsersController {
   @DecorRole(typeUser.ADMIN)
   afficheUserSansFiltre() {
     return this.usersService.afficheUserSansFiltre();
+  }
+
+  @Put('/update-user/:id')
+  updateUser(@Param('id') id: string, @Body() userData: Partial<User>) {
+    return this.usersService.updateUser(id, userData);
+  }
+
+  @Delete('/delete-user/:id')
+  deleteUser(@Param('id') id: string) {
+    return this.usersService.deleteUser(id);
   }
 }

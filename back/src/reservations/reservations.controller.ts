@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { Reservation } from './model/reservations.model';
 import { AccessTokenGuard } from 'src/iam/access-token/access-token.guard';
@@ -25,5 +33,19 @@ export class ReservationsController {
   @DecorRole(typeUser.ADMIN)
   afficheReservation() {
     return this.reservationsService.afficheReservationSansFiltre();
+  }
+
+  @Get('/reserve-users')
+  @UseGuards(AccessTokenGuard, AuthorizationGuard)
+  @DecorRole(typeUser.ADMIN, typeUser.ETUDIANT, typeUser.PROFESSEUR)
+  reserveUser(@ActiveUser() user: User) {
+    return this.reservationsService.reserveUser(user);
+  }
+
+  @Put('/annule-reservation/:id')
+  @UseGuards(AccessTokenGuard, AuthorizationGuard)
+  @DecorRole(typeUser.ADMIN, typeUser.ETUDIANT, typeUser.PROFESSEUR)
+  annuleReservation(@ActiveUser() user: User, @Param('id') id: string) {
+    return this.reservationsService.annuleReservation(id, user);
   }
 }

@@ -44,7 +44,6 @@ export default function CardTableLivre({ filterGenre }) {
   const [idLivre, setIdLivre] = useState(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
 
-  // Persistance dans localStorage
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("livreFilters"));
     if (storedData) {
@@ -63,7 +62,6 @@ export default function CardTableLivre({ filterGenre }) {
     );
   }, [page, limit, search, genre, disponibilite]);
 
-  // Appliquer le filtre de genre si fourni
   useEffect(() => {
     if (filterGenre && genre !== filterGenre) {
       setGenre(filterGenre);
@@ -71,11 +69,8 @@ export default function CardTableLivre({ filterGenre }) {
     }
   }, [filterGenre, genre, setGenre, setPage]);
 
-  // Re-fetch data when filters or pagination change
   useEffect(() => {
-    if (token) {
-      fetchLivreAll();
-    }
+    if (token) fetchLivreAll();
   }, [token, search, genre, disponibilite, page, limit, fetchLivreAll]);
 
   const handleReset = () => {
@@ -89,7 +84,6 @@ export default function CardTableLivre({ filterGenre }) {
 
   const handleEdit = (book) => {
     setSelectedBook(book);
-    console.log("Selected book for edit:", book);
     setEditModalOpen(true);
   };
 
@@ -109,48 +103,49 @@ export default function CardTableLivre({ filterGenre }) {
       await updateLivre(updatedBook.id, updatedBook);
       toast.success("Livre modifié avec succès !");
     } catch (error) {
-      console.error("Erreur lors de la modification:", error);
       toast.error("Erreur lors de la modification du livre.");
     }
     setEditModalOpen(false);
     setSelectedBook(null);
   };
 
-  const truncateText = (text, length = 20) => {
-    if (!text) return "";
-    return text.length > length ? text.substring(0, length) + "..." : text;
-  };
+  const truncateText = (text, length = 20) =>
+    text
+      ? text.length > length
+        ? text.substring(0, length) + "..."
+        : text
+      : "";
 
   const columns = [
     {
       header: "Titre",
       accessorKey: "titre",
       sortable: true,
-      cell: (info) => truncateText(info.getValue(), 20),
+      cell: (info) => truncateText(info.getValue()),
     },
     {
       header: "Auteur",
       accessorKey: "auteur",
       sortable: true,
-      cell: (info) => truncateText(info.getValue(), 20),
+      cell: (info) => truncateText(info.getValue()),
     },
     {
       header: "Année",
       accessorKey: "annee",
       sortable: true,
-      cell: (info) => truncateText(info.getValue(), 20),
+      cell: (info) => truncateText(info.getValue()),
     },
     {
       header: "Genre",
       accessorKey: "genre",
       sortable: true,
-      cell: (info) => truncateText(info.getValue(), 20),
+      cell: (info) => truncateText(info.getValue()),
     },
     {
       header: "Sujet",
       accessorKey: "sujet",
       sortable: true,
-      cell: (info) => truncateText(info.getValue(), 20),
+      cell: (info) => truncateText(info.getValue()),
     },
     {
       header: "Disponibilité",
@@ -176,13 +171,13 @@ export default function CardTableLivre({ filterGenre }) {
               setSelectedBook(row.original);
               setDetailModalOpen(true);
             }}
-            className="text-gray-600 hover:text-gray-800 cursor-pointer p-1"
+            className="text-gray-600 hover:text-gray-800 p-1"
           >
             <FaEye />
           </button>
           <button
             onClick={() => handleEdit(row.original)}
-            className="text-blue-500 hover:text-blue-700 cursor-pointer p-1"
+            className="text-blue-500 hover:text-blue-700 p-1"
           >
             <FaEdit />
           </button>
@@ -191,7 +186,7 @@ export default function CardTableLivre({ filterGenre }) {
               setDeleteModalOpen(true);
               setIdLivre(row.original.id);
             }}
-            className="text-red-500 hover:text-red-700 cursor-pointer p-1"
+            className="text-red-500 hover:text-red-700 p-1"
           >
             <FaTrash />
           </button>
@@ -212,10 +207,10 @@ export default function CardTableLivre({ filterGenre }) {
   });
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg w-full overflow-x-auto">
+    <div className="p-4 bg-white rounded-lg shadow-lg w-full">
       <TableFilters
         search={search}
-        setSearch={(value) => setSearch(value.toLowerCase())} // Recherche insensible à la casse
+        setSearch={(value) => setSearch(value.toLowerCase())}
         genre={genre}
         setGenre={setGenre}
         disponibilite={disponibilite}
@@ -223,58 +218,64 @@ export default function CardTableLivre({ filterGenre }) {
         handleReset={handleReset}
         setPage={setPage}
       />
-      <table className="w-full border border-gray-200 rounded-lg">
-        <thead className="bg-gray-100 text-gray-700">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="p-3 border-b cursor-pointer"
-                  onClick={header.column.getToggleSortingHandler()}
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                  {{
-                    asc: " 🔼",
-                    desc: " 🔽",
-                  }[header.column.getIsSorted()] ?? null}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={columns.length} className="text-center py-4">
-                <Loading />
-              </td>
-            </tr>
-          ) : livreAll.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length} className="text-center py-4">
-                Aucun livre trouvé
-              </td>
-            </tr>
-          ) : (
-            table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-3 border-b whitespace-nowrap">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+      <div className="overflow-x-auto">
+        <table className="w-full border border-gray-200 rounded-lg min-w-[600px]">
+          <thead className="bg-gray-100 text-gray-700">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className="p-3 border-b cursor-pointer"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {{ asc: " 🔼", desc: " 🔽" }[header.column.getIsSorted()] ??
+                      null}
+                  </th>
                 ))}
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-      <div className="flex sm:justify-between items-center mt-4 gap-2">
+            ))}
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={columns.length} className="text-center py-4">
+                  <Loading />
+                </td>
+              </tr>
+            ) : livreAll.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="text-center py-4">
+                  Aucun livre trouvé
+                </td>
+              </tr>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="hover:bg-gray-50">
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="p-3 border-b whitespace-nowrap"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div className="flex flex-col sm:flex-row sm:justify-between items-center mt-4 gap-2">
         <div className="flex items-center gap-2">
-          <span className="whitespace-nowrap">Afficher :</span>
+          <span>Afficher :</span>
           <select
             className="border rounded px-2 py-1"
             value={limit}
@@ -289,11 +290,11 @@ export default function CardTableLivre({ filterGenre }) {
           <button
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
-            className="px-4 py-2 border rounded disabled:opacity-50 whitespace-nowrap"
+            className="px-4 py-2 border rounded disabled:opacity-50"
           >
             Précédent
           </button>
-          <span className="whitespace-nowrap">
+          <span>
             Page {page} sur {totalPages}
           </span>
           <button
@@ -314,10 +315,8 @@ export default function CardTableLivre({ filterGenre }) {
             setSelectedBook(null);
           }}
           onSave={handleSaveEdit}
-          editModalOpen={editModalOpen}
         />
       )}
-
       {deleteModalOpen && (
         <ConfirmationModal
           onClose={() => {
@@ -328,7 +327,6 @@ export default function CardTableLivre({ filterGenre }) {
           message="Êtes-vous sûr de vouloir supprimer ce livre ?"
         />
       )}
-
       {detailModalOpen && selectedBook && (
         <DetailModal
           book={selectedBook}

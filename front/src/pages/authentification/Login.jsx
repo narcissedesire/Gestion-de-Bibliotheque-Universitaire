@@ -3,8 +3,6 @@ import { useAuth } from "../../context/AuthContext";
 import Loading from "../Loading/Loading";
 import { Link, useNavigate } from "react-router-dom";
 
-// const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
-
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -45,14 +43,11 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // const decoded = jwtDecode(data.accessToken); // ✅ Décoder le token
-        // console.log("token:", data.accessToken);
-
         const token = data.accessToken; // Infos utiles du JWT
 
         login(token); // Sauvegarde dans contexte + localStorage
         setSucces("Connexion réussie ! Redirection...");
-        setTimeout(() => navigate("/admin"), 1500);
+        setTimeout(() => navigate("/"), 1500);
       } else {
         setErreur(data.message || "Erreur de connexion");
       }

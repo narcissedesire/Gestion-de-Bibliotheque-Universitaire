@@ -1,17 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as dotenv from 'dotenv';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  dotenv.config();
+  try {
+    const app = await NestFactory.create(AppModule);
 
-  // Activer CORS avec des options spécifiques
-  app.enableCors({
-    origin: 'http://localhost:3001', // Autoriser uniquement cette origine
-    methods: 'GET,HEAD,POST,PUT,DELETE,OPTIONS', // Méthodes autorisées
-    allowedHeaders: 'Content-Type,Accept,Authorization', // Headers autorisés
-    credentials: true, // Autoriser les cookies ou les credentials si nécessaire
-  });
+    app.enableCors({
+      origin: 'http://localhost:5173',
+      methods: 'GET,HEAD,POST,PUT,DELETE,OPTIONS',
+      allowedHeaders: 'Content-Type,Accept,Authorization',
+      credentials: true,
+    });
 
-  await app.listen(process.env.PORT ?? 3000);
+    const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5432;
+    await app.listen(port);
+  } catch (error) {
+    console.error(error);
+  }
 }
 bootstrap();

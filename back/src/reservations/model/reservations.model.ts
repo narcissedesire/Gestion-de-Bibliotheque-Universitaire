@@ -35,6 +35,9 @@ export class Reservation {
   @Column({ type: 'int', default: 1 })
   position_attente: number;
 
+  @Column({ type: 'date', nullable: true })
+  date_annulation: Date;
+
   @CreateDateColumn()
   date_reservation: Date;
 

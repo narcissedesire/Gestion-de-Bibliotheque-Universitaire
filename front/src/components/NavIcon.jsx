@@ -2,16 +2,35 @@ import React from "react";
 import { FiLogOut } from "react-icons/fi";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { MdOutlinePersonOutline } from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function NavIcon({ setProfile, profileMenuRef, profile }) {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Vérifie si on est dans admin ou profile
+  const isAdminPage = location.pathname.startsWith("/admin");
+  const isProfilePage = location.pathname.startsWith("/profile");
+
+  // Détermine la cible du lien
+  const linkTarget =
+    isAdminPage || isProfilePage
+      ? "/" // si déjà dans admin ou profile → retour catalogue
+      : user.type === "Admin"
+      ? "/admin"
+      : "/profile";
+
+  // Détermine le texte du lien
+  const linkLabel =
+    isAdminPage || isProfilePage
+      ? "Catalogue"
+      : user.type === "Admin"
+      ? "Dashboard"
+      : "Mon Profil";
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
   };
 
   return (
@@ -29,7 +48,7 @@ export default function NavIcon({ setProfile, profileMenuRef, profile }) {
       {/* Profil menu */}
       <span className="relative">
         <img
-          src="/images/logo.png"
+          src="/images/profile.jpg"
           alt="Avatar"
           className="w-7 h-7 border rounded-full cursor-pointer"
           onClick={() => setProfile(!profile)} // Ligne 35
@@ -45,13 +64,13 @@ export default function NavIcon({ setProfile, profileMenuRef, profile }) {
               <p className="text-[11px] text-gray-400 -mt-0.5">{user?.type}</p>
             </div>
             <Link
-              to="#"
+              to={linkTarget}
               className="flex items-center justify-start gap-3.5 p-1.5 border-b border-gray-500 hover:bg-gray-100"
             >
               <span className="text-3xl">
                 <MdOutlinePersonOutline className="text-lg" />
               </span>
-              <span>Mon Profil</span>
+              <span>{linkLabel}</span>
             </Link>
             <button
               onClick={handleLogout}

@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Get,
+  Put,
+  Param,
+} from '@nestjs/common';
 import { EmpruntsService } from './emprunts.service';
 import { ActiveUser, DecorRole } from 'src/decorators/active-user.decorator';
 import { typeUser, User } from 'src/users/model/users.model';
@@ -25,7 +33,7 @@ export class EmpruntsController {
 
   @Get('/emprunts-users')
   @UseGuards(AccessTokenGuard, AuthorizationGuard)
-  @DecorRole(typeUser.ETUDIANT, typeUser.PROFESSEUR)
+  @DecorRole(typeUser.ETUDIANT, typeUser.PROFESSEUR, typeUser.ADMIN)
   empruntsUser(@ActiveUser() user: any) {
     return this.empruntsService.empruntUser(user.id);
   }
@@ -35,5 +43,13 @@ export class EmpruntsController {
   @DecorRole(typeUser.ADMIN)
   allEmprunts() {
     return this.empruntsService.allEmprunts();
+  }
+
+  @Put('/return-livre/:id')
+  @UseGuards(AccessTokenGuard, AuthorizationGuard)
+  @DecorRole(typeUser.ADMIN, typeUser.PROFESSEUR, typeUser.ETUDIANT)
+  retournLivre(@Param('id') id: string) {
+    console.log('id : ' + id);
+    return this.empruntsService.retournerLivre(id);
   }
 }

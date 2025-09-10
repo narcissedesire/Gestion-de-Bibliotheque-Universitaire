@@ -1,3 +1,4 @@
+// TableFilters.jsx
 import React from "react";
 import { MdOutlineSettingsBackupRestore } from "react-icons/md";
 import SearchBar from "./SearchBar";
@@ -14,11 +15,15 @@ export default function TableFilters({
 }) {
   return (
     <div className="mt-7 grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
-      <SearchBar search={search} setSearch={setSearch} setPage={setPage} />
+      {/* SearchBar */}
+      <div className="col-span-12 md:col-span-7">
+        <SearchBar search={search} setSearch={setSearch} setPage={setPage} />
+      </div>
 
-      <div className="col-span-5 grid grid-cols-3 gap-2">
+      {/* Filtres */}
+      <div className="col-span-12 md:col-span-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
         <select
-          className="w-full bg-gray-200 border text-sm p-2"
+          className="w-full bg-gray-200 border text-sm p-2 rounded-sm"
           value={genre}
           onChange={(e) => {
             setGenre(e.target.value);
@@ -33,7 +38,7 @@ export default function TableFilters({
         </select>
 
         <select
-          className="w-full bg-gray-200 border text-sm p-2"
+          className="w-full bg-gray-200 border text-sm p-2 rounded-sm"
           value={disponibilite}
           onChange={(e) => {
             setDisponibilite(e.target.value);
@@ -47,7 +52,7 @@ export default function TableFilters({
 
         <button
           onClick={handleReset}
-          className="flex items-center justify-center gap-2 bg-gray-100 border rounded-sm hover:bg-gray-200"
+          className="flex items-center justify-center gap-2 bg-gray-100 border rounded-sm hover:bg-gray-200 p-2 text-sm"
         >
           <MdOutlineSettingsBackupRestore />
           Reset

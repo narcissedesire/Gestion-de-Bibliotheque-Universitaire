@@ -12,10 +12,10 @@ export default function LiensSidebar({ lien, icon, titre }) {
             : "text-gray-700 hover:bg-gray-200"
         }`
       }
-      end={lien === "/admin"}
+      end={lien === "/admin" || lien === "/profile"}
     >
       <span>{icon}</span>
-      <span>{titre}</span>
+      <span className="whitespace-nowrap">{titre}</span>
     </NavLink>
   );
 }

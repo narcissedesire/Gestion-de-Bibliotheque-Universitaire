@@ -5,7 +5,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
-  MethodNotAllowedException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserCreateDto } from './dto/userCreate.dto';
@@ -27,6 +27,7 @@ export class UsersService {
   ) {}
 
   async createUser(user: UserCreateDto) {
+    console.log('Creating user with data:', user);
     const verifyUser = await this.userRepository.findOne({
       where: { email: user.email },
     });
@@ -38,7 +39,12 @@ export class UsersService {
       ...user,
       motDePasse: hashPassword,
     });
-    return this.userRepository.save(newUser);
+    const saveUser = await this.userRepository.save(newUser);
+    return {
+      success: true,
+      message: 'Inscription réussie',
+      saveUser,
+    };
   }
 
   async signToken(user: {
@@ -47,6 +53,7 @@ export class UsersService {
     type: string;
     nom: string;
     prenom: string;
+    createdAt: Date;
   }) {
     const payload = {
       id: user.id,
@@ -54,14 +61,10 @@ export class UsersService {
       type: user.type,
       nom: user.nom,
       prenom: user.prenom,
+      createdAt: user.createdAt,
     };
     console.log('Payload JWT généré:', payload);
-    return this.jwtService.signAsync(payload, {
-      secret: this.jwtConfiguration.secret,
-      expiresIn: this.jwtConfiguration.signOptions.expiresIn,
-      audience: this.jwtConfiguration.signOptions.audience,
-      issuer: this.jwtConfiguration.signOptions.issuer,
-    });
+    return this.jwtService.signAsync(payload);
   }
 
   async connexion(user: UserLoginDto) {
@@ -92,18 +95,19 @@ export class UsersService {
         type: existingUser.type,
         nom: existingUser.nom,
         prenom: existingUser.prenom,
+        createdAt: existingUser.createdAt,
       });
 
       // Retourne le token + infos utiles
       return {
         accessToken,
-        user: {
-          id: existingUser.id,
-          email: existingUser.email,
-          type: existingUser.type,
-          nom: existingUser.nom,
-          prenom: existingUser.prenom,
-        },
+        // user: {
+        //   id: existingUser.id,
+        //   email: existingUser.email,
+        //   type: existingUser.type,
+        //   nom: existingUser.nom,
+        //   prenom: existingUser.prenom,
+        // },
       };
     } catch (error) {
       console.error('Erreur lors de la connexion:', error.message);
@@ -131,5 +135,37 @@ export class UsersService {
     const data = this.userRepository.find();
     console.log('data avao : ', data);
     return data;
+  }
+
+  async updateUser(id: string, userData: Partial<User>) {
+    console.log('update user', userData);
+    try {
+      const user = await this.userRepository.preload({ id, ...userData });
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
+      // const update = await this.userRepository.update(id, userData);
+      // Object.assign(user, userData);
+      const dataUser = await this.userRepository.save(user);
+      return {
+        message: 'Utilisateur mis à jour avec succès',
+        success: true,
+        dataUser,
+      };
+    } catch (error) {
+      return {
+        message: "Erreur lors de la mise à jour de l'utilisateur",
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  async deleteUser(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+    return this.userRepository.remove(user);
   }
 }

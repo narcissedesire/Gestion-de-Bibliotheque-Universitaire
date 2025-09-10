@@ -5,8 +5,10 @@ import { HiOutlineBookOpen } from "react-icons/hi2";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa";
 import { useSidebar } from "../context/SidebarContext";
+import { ImProfile } from "react-icons/im";
+import { MdOutlineFactCheck } from "react-icons/md";
 
-export default function Sidebar() {
+export default function SidebarProfil() {
   const { openSidebar, setOpenSidebar } = useSidebar();
 
   const handleLinkClick = () => {
@@ -43,24 +45,25 @@ export default function Sidebar() {
         </div>
         <div>
           <LiensSidebar
-            lien="/admin"
-            icon={<IoHomeOutline />}
-            titre="Tableau de bord"
             onClick={handleLinkClick}
+            lien="/profile"
+            icon={<ImProfile />}
+            titre="Profile"
           />
           <LiensSidebar
-            lien="/admin/livre"
+            lien="/profile/emprunt"
             icon={<HiOutlineBookOpen />}
-            titre="Gestion des livres"
+            titre="Emprunts"
             onClick={handleLinkClick}
           />
           <LiensSidebar
-            lien="/admin/utilisateur"
-            icon={<FaRegUser />}
-            titre="Gestion des users"
+            lien="/profile/reservation"
+            icon={<MdOutlineFactCheck />}
+            titre="Reservation"
+            // onClick={handleLinkClick}
           />
           <LiensSidebar
-            lien="/admin/parametre"
+            lien="/profile/parametre"
             icon={<IoSettingsOutline />}
             titre="Parametre"
             onClick={handleLinkClick}

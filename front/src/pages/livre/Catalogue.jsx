@@ -1,12 +1,11 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect, useCallback, useState } from "react";
 import { useLibrairie } from "../../context/LibrairieContext";
 import { toast } from "react-toastify";
 import NavIcon from "../../components/NavIcon";
 import CardLivre from "../../components/livre/CardLivre";
 import Loading from "../Loading/Loading";
 
-export default function Catalogue({ setProfile, profileMenuRef, profile }) {
-  const layoutRef = useRef(null);
+export default function Catalogue() {
   const {
     livreAll,
     fetchLivreAll,
@@ -29,7 +28,7 @@ export default function Catalogue({ setProfile, profileMenuRef, profile }) {
   // Charger les livres uniquement pour cette page
   useEffect(() => {
     fetchLivreAll();
-  }, [fetchLivreAll, page, search, genre, disponibilite, limit]); // Ajout de limit comme dépendance
+  }, [fetchLivreAll, page, search, genre, disponibilite, limit]);
 
   const handleEmprunter = useCallback(
     async (livreId) => {
@@ -62,8 +61,41 @@ export default function Catalogue({ setProfile, profileMenuRef, profile }) {
     setPage(1); // Réinitialiser à la page 1 pour éviter des erreurs avec un numéro de page invalide
   };
 
+  const [profile, setProfile] = useState(false); // État géré ici
+  const profileMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setProfile(false);
+      }
+    };
+
+    if (profile) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [profile]);
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    if (value.length >= 3) {
+      setSearch(value);
+      setPage(1);
+    } else if (value.length === 0) {
+      setSearch("");
+      setPage(1);
+    }
+  };
+
   return (
-    <div className="px-2 py-3 sm:px-0 container mx-auto">
+    <div className="px-2 py-3 container mx-auto">
       <div className="flex items-center justify-between py-3 border-b border-gray-300">
         <div className="flex items-start gap-3">
           <div>
@@ -90,8 +122,8 @@ export default function Catalogue({ setProfile, profileMenuRef, profile }) {
         <input
           type="text"
           placeholder="Rechercher un livre..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          // value={search}
+          onChange={handleSearchChange}
           className="px-3 py-2 border rounded"
         />
         <select

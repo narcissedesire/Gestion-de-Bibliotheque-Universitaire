@@ -11,86 +11,138 @@ import Utilisateur from "./pages/utilisateur/Utilisateur";
 import Parametre from "./pages/parametre/Parametre";
 import Sidebar from "./components/Sidebar";
 import AdminLayout from "./components/AdminLayout";
-import { useState } from "react";
+import { SidebarProvider } from "./context/SidebarContext"; // Import SidebarProvider
 import { LibrairieProvider } from "./context/LibrairieContext";
 import Catalogue from "./pages/livre/Catalogue";
+import EmpruntProfile from "./pages/profile/EmpruntProfile";
+import SidebarProfil from "./components/SidebarProfil";
+import ProfileLayout from "./components/ProfileLayout";
+import DashboardProfil from "./pages/profile/DashboardProfil";
+import ReserveProfile from "./pages/profile/ReserveProfile";
 
 export default function App() {
-  const [openSidebar, setOpenSidebar] = useState(true);
-
   return (
     <AuthProvider>
       <LibrairieProvider>
-        <Router>
-          <Routes>
-            <Route path="/inscription" element={<Inscription />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Catalogue />} />
-            <Route path="/unauthorized" element={<Unauthorized />} />
+        <SidebarProvider>
+          {" "}
+          {/* Wrap with SidebarProvider */}
+          <Router>
+            <Routes>
+              <Route path="/inscription" element={<Inscription />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/emprunt-profile" element={<EmpruntProfile />} />
+              <Route path="/" element={<Catalogue />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
 
-            {/* Routes Admin protégées */}
-            <Route
-              path="/admin"
-              element={
-                <div className="flex overflow-hidden">
-                  <Sidebar
-                    openSidebar={openSidebar}
-                    setOpenSidebar={setOpenSidebar}
-                  />
-                  <AdminLayout
-                    openSidebar={openSidebar}
-                    setOpenSidebar={setOpenSidebar}
-                  />
-                </div>
-              }
-            >
+              {/* Routes Admin protégées */}
               <Route
-                index
+                path="/admin"
                 element={
-                  <ProtectedRoute allowedRoles={["Admin"]}>
-                    <DashboardAdmin />
-                  </ProtectedRoute>
+                  <div className="flex overflow-hidden">
+                    <Sidebar /> {/* Remove props, use context */}
+                    <AdminLayout /> {/* Remove props, use context */}
+                  </div>
                 }
-              />
-              <Route
-                path="livre"
-                element={
-                  <ProtectedRoute allowedRoles={["Admin"]}>
-                    <Livre />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="utilisateur"
-                element={
-                  <ProtectedRoute allowedRoles={["Admin"]}>
-                    <Utilisateur />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="parametre"
-                element={
-                  <ProtectedRoute allowedRoles={["Admin"]}>
-                    <Parametre />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
+              >
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute allowedRoles={["Admin"]}>
+                      <DashboardAdmin />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="livre"
+                  element={
+                    <ProtectedRoute allowedRoles={["Admin"]}>
+                      <Livre />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="utilisateur"
+                  element={
+                    <ProtectedRoute allowedRoles={["Admin"]}>
+                      <Utilisateur />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="parametre"
+                  element={
+                    <ProtectedRoute allowedRoles={["Admin"]}>
+                      <Parametre />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
 
-            {/* Route pour étudiants (exemple) */}
-            <Route
-              path="/reservation"
-              element={
-                <ProtectedRoute
-                  allowedRoles={["Etudiant", "Professeur", "Admin"]}
-                >
-                  <Reservation />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Router>
+              {/* Routes Profile protégées */}
+              <Route
+                path="/profile"
+                element={
+                  <div className="flex overflow-hidden">
+                    <SidebarProfil /> {/* Remove props, use context */}
+                    <ProfileLayout /> {/* Remove props, use context */}
+                  </div>
+                }
+              >
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["Admin", "Etudiant", "Professeur"]}
+                    >
+                      <DashboardProfil />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="emprunt"
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["Admin", "Etudiant", "Professeur"]}
+                    >
+                      <EmpruntProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="reservation"
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["Admin", "Etudiant", "Professeur"]}
+                    >
+                      <ReserveProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="parametre"
+                  element={
+                    <ProtectedRoute allowedRoles={["Admin"]}>
+                      <Parametre />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
+
+              {/* Route pour étudiants (exemple) */}
+              <Route
+                path="/reservation"
+                element={
+                  <ProtectedRoute
+                    allowedRoles={["Etudiant", "Professeur", "Admin"]}
+                  >
+                    <Reservation />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Router>
+        </SidebarProvider>
       </LibrairieProvider>
     </AuthProvider>
   );
