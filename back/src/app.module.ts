@@ -32,7 +32,7 @@ import { Reservation } from './reservations/model/reservations.model';
     //   type: 'postgres',
     //   host: process.env.DB_HOST || 'localhost',
     //   username: process.env.DB_USERNAME,
-    //   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5000,
+    //   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
     //   password: process.env.DB_PASSWORD,
     //   database: process.env.DB_DATABASE,
     //   entities: [User, Notification, Emprunts, Livres, Reservation],

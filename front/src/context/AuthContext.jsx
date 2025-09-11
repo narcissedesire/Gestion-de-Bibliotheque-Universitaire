@@ -2,12 +2,13 @@ import React, { createContext, useState, useContext, useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { useLibrairie } from "./LibrairieContext";
+import { API_URL } from "../../API_URL";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   // ✅ État initial basé sur le token stocké
-  const API_URL = "http://localhost:5432";
+  // const API_URL = "https://gestion-de-bibliotheque-universitaire.onrender.com";
   const token = localStorage.getItem("token");
   const [user, setUser] = useState(() => {
     const token = localStorage.getItem("token");

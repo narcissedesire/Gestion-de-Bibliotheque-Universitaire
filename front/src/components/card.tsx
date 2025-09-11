@@ -156,9 +156,12 @@ export function CardProfilEmprunt({
 }) {
   // Fonction pour la couleur du bouton
   const getButtonClasses = () => {
-    if (status === "En cours") return "text-white bg-black hover:bg-black/80";
-    if (status === "Retourné") return "text-black bg-white hover:bg-gray-100";
-    if (status === "En retard") return "text-white bg-red-500 hover:bg-red-600";
+    if (status === "En cours")
+      return "whitespace-nowrap text-white bg-black hover:bg-black/80";
+    if (status === "Retourné")
+      return "whitespace-nowrap text-black bg-white hover:bg-gray-100";
+    if (status === "En retard")
+      return "whitespace-nowrap text-white bg-red-500 hover:bg-red-600";
     return "text-black bg-gray-200";
   };
 
@@ -172,7 +175,7 @@ export function CardProfilEmprunt({
             par {auteurLivre}
           </span>
         </span>
-        <span className="px-2 py-1 bg-gray-300 rounded-lg text-[10px]">
+        <span className="px-2 py-1 bg-gray-300 rounded-lg text-[10px] whitespace-nowrap">
           {status}
         </span>
       </div>
@@ -200,7 +203,7 @@ export function CardProfilEmprunt({
       {(status === "En cours" || status === "En retard") && (
         <button
           onClick={returnLivre}
-          className={`flex items-center gap-2 text-xs px-2 py-1 border border-gray-300 rounded-md cursor-pointer ${getButtonClasses()}`}
+          className={`whitespace-nowrap flex items-center gap-2 text-xs px-2 py-1 border border-gray-300 rounded-md cursor-pointer ${getButtonClasses()}`}
         >
           {/* Icône */}
           {(status === "En cours" || status === "En retard") && (
@@ -260,7 +263,7 @@ export function CardProfilReserve({
           </span>
           <span>Recuperation prevue: {dateRecuperationPrevu}</span>
         </div>
-        <div className="flex items-center gap-2 text-xs ">
+        <div className="whitespace-nowrap flex items-center gap-2 text-xs ">
           <span>
             <FaRegHeart />
           </span>

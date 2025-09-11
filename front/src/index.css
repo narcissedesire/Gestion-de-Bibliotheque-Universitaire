@@ -69,3 +69,9 @@ input {
 .animate-pulse {
   animation: pulse 1.5s infinite;
 }
+
+.min-400 {
+  @media (width >= 400px /* 640px */) {
+    display: block;
+  }
+}

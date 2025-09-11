@@ -32,7 +32,7 @@ export class Livres {
   @Column({ type: 'enum', enum: LivreGere, default: LivreGere.AUTRE })
   genre: LivreGere;
 
-  @Column({ length: 100, nullable: true })
+  @Column({ type: 'text', nullable: true })
   sujet: string;
 
   @Column({ length: 50, nullable: true })

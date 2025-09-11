@@ -13,21 +13,23 @@ export default function NavIcon({ setProfile, profileMenuRef, profile }) {
   const isAdminPage = location.pathname.startsWith("/admin");
   const isProfilePage = location.pathname.startsWith("/profile");
 
-  // Détermine la cible du lien
-  const linkTarget =
-    isAdminPage || isProfilePage
-      ? "/" // si déjà dans admin ou profile → retour catalogue
+  // Détermine la cible du lien uniquement si user existe
+  const linkTarget = user
+    ? isAdminPage || isProfilePage
+      ? "/"
       : user.type === "Admin"
       ? "/admin"
-      : "/profile";
+      : "/profile"
+    : "/"; // Valeur par défaut si user est null
 
-  // Détermine le texte du lien
-  const linkLabel =
-    isAdminPage || isProfilePage
+  // Détermine le texte du lien uniquement si user existe
+  const linkLabel = user
+    ? isAdminPage || isProfilePage
       ? "Catalogue"
       : user.type === "Admin"
       ? "Dashboard"
-      : "Mon Profil";
+      : "Mon Profil"
+    : "Catalogue"; // Valeur par défaut si user est null
 
   const handleLogout = () => {
     logout();
@@ -51,7 +53,7 @@ export default function NavIcon({ setProfile, profileMenuRef, profile }) {
           src="/images/profile.jpg"
           alt="Avatar"
           className="w-7 h-7 border rounded-full cursor-pointer"
-          onClick={() => setProfile(!profile)} // Ligne 35
+          onClick={() => setProfile(!profile)}
         />
         {profile && (
           <div

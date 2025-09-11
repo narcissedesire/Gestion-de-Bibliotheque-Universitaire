@@ -95,13 +95,14 @@ export default function Catalogue() {
   };
 
   return (
-    <div className="px-2 py-3 container mx-auto">
+    <div className="px-2 sm:px-4 py-3 container mx-auto max-w-7xl">
+      {/* En-tête avec logo à gauche et NavIcon à droite, toujours entre */}
       <div className="flex items-center justify-between py-3 border-b border-gray-300">
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3 flex-shrink-0">
           <div>
-            <img src="/images/logo.png" className="w-10" />
+            <img src="/images/logo.png" className="w-10 sm:w-12" alt="Logo" />
           </div>
-          <div className="flex flex-col items-start">
+          <div className="hidden flex-col items-start min-400 ">
             <h1 className="text-sm sm:text-lg font-bold">
               Catalogue des Livres
             </h1>
@@ -110,7 +111,7 @@ export default function Catalogue() {
             </p>
           </div>
         </div>
-        <div>
+        <div className="flex-shrink-0">
           <NavIcon
             setProfile={setProfile}
             profileMenuRef={profileMenuRef}
@@ -118,18 +119,20 @@ export default function Catalogue() {
           />
         </div>
       </div>
-      <div className="mt-4 flex gap-4">
+
+      {/* Filtres - Empilés sur mobile, alignés sur sm et plus */}
+      <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:gap-4">
         <input
           type="text"
           placeholder="Rechercher un livre..."
           // value={search}
           onChange={handleSearchChange}
-          className="px-3 py-2 border rounded"
+          className="px-3 py-2 border rounded w-full sm:w-auto"
         />
         <select
           value={genre}
           onChange={(e) => setGenre(e.target.value)}
-          className="px-3 py-2 border rounded"
+          className="px-3 py-2 border rounded w-full sm:w-auto"
         >
           <option value="">Tous les genres</option>
           <option value="Roman">Roman</option>
@@ -140,7 +143,7 @@ export default function Catalogue() {
         <select
           value={disponibilite}
           onChange={(e) => setDisponibilite(e.target.value)}
-          className="px-3 py-2 border rounded"
+          className="px-3 py-2 border rounded w-full sm:w-auto"
         >
           <option value="">Tous</option>
           <option value="true">Disponible</option>
@@ -149,7 +152,7 @@ export default function Catalogue() {
         <select
           value={limit}
           onChange={handleLimitChange}
-          className="px-3 py-2 border rounded"
+          className="px-3 py-2 border rounded w-full sm:w-auto"
         >
           <option value="10">10 par page</option>
           <option value="20">20 par page</option>
@@ -157,7 +160,9 @@ export default function Catalogue() {
           <option value="50">50 par page</option>
         </select>
       </div>
-      <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+
+      {/* Grille des cartes - Responsive avec ajustements */}
+      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
         {loading ? (
           <div className="col-span-full text-center py-10">
             <Loading />
@@ -181,21 +186,23 @@ export default function Catalogue() {
           ))
         )}
       </div>
-      <div className="flex justify-center mt-4 gap-2">
+
+      {/* Pagination - Centrée et responsive */}
+      <div className="flex justify-center mt-4 gap-2 flex-col sm:flex-row items-center">
         <button
           onClick={() => setPage((prev) => Math.max(1, prev - 1))}
           disabled={page === 1}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 w-full sm:w-auto"
         >
           Précédent
         </button>
-        <span className="py-2">
+        <span className="py-2 text-center w-full sm:w-auto">
           Page {page} / {totalPages}
         </span>
         <button
           onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
           disabled={page === totalPages}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 w-full sm:w-auto"
         >
           Suivant
         </button>

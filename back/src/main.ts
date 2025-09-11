@@ -8,13 +8,16 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     app.enableCors({
-      origin: 'http://localhost:5173',
+      origin: [
+        'http://localhost:5173',
+        // 'https://bibliotheque-frontend.vercel.app',
+      ],
       methods: 'GET,HEAD,POST,PUT,DELETE,OPTIONS',
       allowedHeaders: 'Content-Type,Accept,Authorization',
       credentials: true,
     });
 
-    const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5432;
+    const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
     await app.listen(port);
   } catch (error) {
     console.error(error);

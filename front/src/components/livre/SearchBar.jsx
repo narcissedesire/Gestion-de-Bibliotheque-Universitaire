@@ -24,7 +24,7 @@ export default function SearchBar({
         type="text"
         className="border-r border-gray-400 w-full px-2.5 py-1 text-sm outline-none bg-transparent"
         placeholder={placeholder}
-        value={search}
+        // value={search}
         onChange={handleSearchChange}
       />
       <span className="w-8 h-7 flex items-center justify-center">

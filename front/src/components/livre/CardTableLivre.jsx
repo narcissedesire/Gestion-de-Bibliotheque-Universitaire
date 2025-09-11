@@ -48,7 +48,7 @@ export default function CardTableLivre({ filterGenre }) {
     const storedData = JSON.parse(localStorage.getItem("livreFilters"));
     if (storedData) {
       setPage(storedData.page || 1);
-      setLimit(storedData.limit || 5);
+      setLimit(storedData.limit || 10);
       setSearch(storedData.search || "");
       setGenre(storedData.genre || "");
       setDisponibilite(storedData.disponibilite || "");
@@ -78,7 +78,7 @@ export default function CardTableLivre({ filterGenre }) {
     setGenre("");
     setDisponibilite("");
     setPage(1);
-    setLimit(5);
+    setLimit(10);
     localStorage.removeItem("livreFilters");
   };
 
@@ -171,13 +171,13 @@ export default function CardTableLivre({ filterGenre }) {
               setSelectedBook(row.original);
               setDetailModalOpen(true);
             }}
-            className="text-gray-600 hover:text-gray-800 p-1"
+            className="text-gray-600 hover:text-gray-800 p-1 cursor-pointer"
           >
             <FaEye />
           </button>
           <button
             onClick={() => handleEdit(row.original)}
-            className="text-blue-500 hover:text-blue-700 p-1"
+            className="text-blue-500 hover:text-blue-700 p-1 cursor-pointer"
           >
             <FaEdit />
           </button>
@@ -186,7 +186,7 @@ export default function CardTableLivre({ filterGenre }) {
               setDeleteModalOpen(true);
               setIdLivre(row.original.id);
             }}
-            className="text-red-500 hover:text-red-700 p-1"
+            className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
           >
             <FaTrash />
           </button>
@@ -220,13 +220,13 @@ export default function CardTableLivre({ filterGenre }) {
       />
       <div className="overflow-x-auto">
         <table className="w-full border border-gray-200 rounded-lg min-w-[600px]">
-          <thead className="bg-gray-100 text-gray-700">
+          <thead className="text-start bg-gray-100 text-gray-700">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="p-3 border-b cursor-pointer"
+                    className="text-start p-3 border-b cursor-pointer"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {flexRender(
@@ -243,7 +243,7 @@ export default function CardTableLivre({ filterGenre }) {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-4">
+                <td colSpan={columns.length} className=" py-4">
                   <Loading />
                 </td>
               </tr>
@@ -281,9 +281,9 @@ export default function CardTableLivre({ filterGenre }) {
             value={limit}
             onChange={(e) => setLimit(Number(e.target.value))}
           >
-            <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={20}>20</option>
+            <option value={50}>50</option>
           </select>
         </div>
         <div className="flex gap-2 items-center">

@@ -8,6 +8,9 @@ export default defineConfig({
     host: "0.0.0.0", // Force l'utilisation d'IPv4 pour éviter les problèmes IPv6
   },
   define: {
-    API_URL: JSON.stringify("http://localhost:5432"),
+    API_URL: JSON.stringify(
+      "https://gestion-de-bibliotheque-universitaire.onrender.com"
+      // "http://localhost:8080"
+    ),
   },
 });

@@ -65,7 +65,7 @@ export default function Login() {
       const timer = setTimeout(() => {
         setErreur("");
         setSucces("");
-      }, 3000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [erreur, succes]);

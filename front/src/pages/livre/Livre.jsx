@@ -4,6 +4,7 @@ import { FaPlus } from "react-icons/fa6";
 import ModalAjoutLivre from "../../components/ModalAjoutLivre";
 import { useLibrairie } from "../../context/LibrairieContext";
 import CardTableLivre from "../../components/livre/CardTableLivre";
+import { toast } from "react-toastify";
 
 export default function Livre() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -91,7 +92,7 @@ export default function Livre() {
       >
         <button
           onClick={handleAddClick}
-          className="border px-2 py-1 rounded-sm flex items-center gap-1.5 hover:bg-gray-200 transition duration-300 sm:px-3 sm:py-2"
+          className="cursor-pointer border px-2 py-1 rounded-sm flex items-center gap-1.5 hover:bg-gray-200 transition duration-300 sm:px-3 sm:py-2"
         >
           <FaPlus />
           Ajouter
