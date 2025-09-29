@@ -11,7 +11,6 @@ export default function Livre() {
   const [filterGenre, setFilterGenre] = useState("");
   const {
     allLivreSansFiltre,
-    livreAll,
     fetchLivreAll,
     fetchLivreAllSansFiltre,
     limit,
@@ -116,8 +115,6 @@ export default function Livre() {
       </div>
       <CardTableLivre
         filterGenre={filterGenre}
-        updateLivre={updateLivre}
-        deleteLivre={deleteLivre}
       />
       {isModalOpen && (
         <ModalAjoutLivre

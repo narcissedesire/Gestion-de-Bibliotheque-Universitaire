@@ -19,6 +19,7 @@ export function LibrairieProvider({ children }) {
   const [allLivreSansFiltre, setAllLivreSansFiltre] = useState([]);
   const [users, setUsers] = useState([]);
   const [userSansFiltre, setUserSansFiltre] = useState([]);
+  const [userAvecFiltre, setUserAvecFiltre] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -26,6 +27,7 @@ export function LibrairieProvider({ children }) {
   const [search, setSearch] = useState("");
   const [genre, setGenre] = useState("");
   const [disponibilite, setDisponibilite] = useState("");
+  const [typeUser, setTypeUser] = useState("");
   const [message, setMessage] = useState();
   const [reserveUser, setReserveUser] = useState([]);
 
@@ -59,26 +61,47 @@ export function LibrairieProvider({ children }) {
     if (!token || !user) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/users/affiche_user`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        search,
+        type: typeUser || "",
+        isActive: disponibilite || "",
       });
+      const res = await fetch(
+        `${API_URL}/users/affiche_user?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!res.ok)
         throw new Error(`Erreur HTTP ${res.status}: ${await res.text()}`);
       const data = await res.json();
       console.log("data users:", data);
-      setUserSansFiltre(Array.isArray(data) ? data : data.data || []);
+      setUserAvecFiltre(Array.isArray(data) ? data : data.data || []);
     } catch (error) {
       console.error("Erreur lors du fetch des utilisateurs :", error);
       toast.error("Erreur lors du chargement des utilisateurs");
-      setUserSansFiltre([]);
+      setUserAvecFiltre([]);
+      setLoading(false);
     } finally {
       setLoading(false);
     }
-  }, [token, user]);
+  }, [
+    token,
+    user,
+    page,
+    limit,
+    search,
+    typeUser,
+    setLoading,
+    setUserAvecFiltre,
+    setTotalPages,
+  ]);
 
   const fetchUserSansFiltre = useCallback(async () => {
     if (!token || !user) return;
@@ -120,6 +143,7 @@ export function LibrairieProvider({ children }) {
         type: genre || "",
         disponible: disponibilite || "",
       });
+
       const res = await fetch(
         `${API_URL}/livres/findAll?${params.toString()}`,
         {
@@ -145,6 +169,7 @@ export function LibrairieProvider({ children }) {
           : `Erreur lors du chargement des livres : ${error.message}`
       );
       setLivreAll([]);
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -602,6 +627,9 @@ export function LibrairieProvider({ children }) {
         fetchReservesUser,
         reserveUser,
         annuleResevation,
+        userAvecFiltre,
+        typeUser,
+        setTypeUser,
       }}
     >
       {children}

@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Inscription from "./pages/authentification/Inscription";
 import Login from "./pages/authentification/Login";
-import Reservation from "./pages/reservation/Reservation";
 import DashboardAdmin from "./pages/dashboard/DashboardAdmin";
 import Unauthorized from "./components/Unauthorized";
 import { AuthProvider } from "./context/AuthContext";
@@ -19,6 +18,8 @@ import SidebarProfil from "./components/SidebarProfil";
 import ProfileLayout from "./components/ProfileLayout";
 import DashboardProfil from "./pages/profile/DashboardProfil";
 import ReserveProfile from "./pages/profile/ReserveProfile";
+import NotFoundPage from "./components/NotFoundPage";
+import NotificationsPage from "./components/NotificationsPage";
 
 export default function App() {
   return (
@@ -29,10 +30,21 @@ export default function App() {
           {/* Wrap with SidebarProvider */}
           <Router>
             <Routes>
+              <Route path="*" element={<NotFoundPage />} />
               <Route path="/inscription" element={<Inscription />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/notification" element={<NotificationsPage />} />
               <Route path="/emprunt-profile" element={<EmpruntProfile />} />
-              <Route path="/" element={<Catalogue />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute
+                    allowedRoles={["Admin", "Etudiant", "Professeur"]}
+                  >
+                    <Catalogue />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/unauthorized" element={<Unauthorized />} />
 
               {/* Routes Admin protégées */}
@@ -84,8 +96,12 @@ export default function App() {
                 path="/profile"
                 element={
                   <div className="flex overflow-hidden">
-                    <SidebarProfil /> {/* Remove props, use context */}
-                    <ProfileLayout /> {/* Remove props, use context */}
+                    <ProtectedRoute
+                      allowedRoles={["Admin", "Etudiant", "Professeur"]}
+                    >
+                      <SidebarProfil />
+                      <ProfileLayout />
+                    </ProtectedRoute>
                   </div>
                 }
               >
@@ -128,18 +144,6 @@ export default function App() {
                   }
                 />
               </Route>
-
-              {/* Route pour étudiants (exemple) */}
-              <Route
-                path="/reservation"
-                element={
-                  <ProtectedRoute
-                    allowedRoles={["Etudiant", "Professeur", "Admin"]}
-                  >
-                    <Reservation />
-                  </ProtectedRoute>
-                }
-              />
             </Routes>
           </Router>
         </SidebarProvider>

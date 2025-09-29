@@ -4,6 +4,7 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { MdOutlinePersonOutline } from "react-icons/md";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import NotificationIcon from "./NotificationIcon";
 
 export default function NavIcon({ setProfile, profileMenuRef, profile }) {
   const { user, logout } = useAuth();
@@ -38,14 +39,7 @@ export default function NavIcon({ setProfile, profileMenuRef, profile }) {
   return (
     <div className="flex items-center gap-5">
       {/* Notifications */}
-      <span className="relative hover:bg-gray-200 p-2 w-7 h-7 flex items-center justify-center rounded-full cursor-pointer">
-        <span className="absolute w-3.5 h-3.5 bg-red-500 text-white flex items-center justify-center text-[10px] rounded-full -top-1 -right-0.5">
-          2
-        </span>
-        <span>
-          <IoNotificationsOutline className="text-2xl" />
-        </span>
-      </span>
+      <NotificationIcon />
 
       {/* Profil menu */}
       <span className="relative">

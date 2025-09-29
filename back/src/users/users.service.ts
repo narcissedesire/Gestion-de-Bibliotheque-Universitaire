@@ -119,16 +119,28 @@ export class UsersService {
     }
   }
 
-  async afficheUsers(params: PaginationParams, type: typeUser) {
+  async afficheUsers(
+    params: PaginationParams,
+    type: typeUser,
+    disponible?: boolean,
+  ) {
     const searchFields: SearchField[] = [
-      { field: 'titre' },
-      { field: 'genre', isEnum: true },
-      { field: 'auteur' },
+      { field: 'nom' },
+      { field: 'type', isEnum: true },
+      { field: 'prenom' },
     ];
 
-    const where = type ? { type } : undefined;
+    let where: any = {};
+    if (type) {
+      where.type = { type };
+    }
+    if (disponible !== undefined) {
+      where.isActive = disponible;
+    }
 
-    return paginate<User>(this.userRepository, params, searchFields, where);
+    return paginate<User>(this.userRepository, params, searchFields, where, {
+      relations: ['emprunts', 'reservations'],
+    });
   }
 
   async afficheUserSansFiltre() {
@@ -146,6 +158,27 @@ export class UsersService {
       }
       // const update = await this.userRepository.update(id, userData);
       // Object.assign(user, userData);
+      const dataUser = await this.userRepository.save(user);
+      return {
+        message: 'Utilisateur mis à jour avec succès',
+        success: true,
+        dataUser,
+      };
+    } catch (error) {
+      return {
+        message: "Erreur lors de la mise à jour de l'utilisateur",
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  async updateStatusUser(id: string, userData: Partial<User>) {
+    try {
+      const user = await this.userRepository.preload({ id, ...userData });
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
       const dataUser = await this.userRepository.save(user);
       return {
         message: 'Utilisateur mis à jour avec succès',

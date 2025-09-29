@@ -225,8 +225,7 @@ export default function Inscription() {
               >
                 <option value="">Sélectionner un type</option>
                 <option value="Etudiant">Etudiant</option>
-                <option value="Professeur">Professeur</option>
-                <option value="Admin">Admin</option>
+                <option value="Professeur">Professezur</option>
               </select>
             </div>
             <button

@@ -10,7 +10,7 @@ async function bootstrap() {
     app.enableCors({
       origin: [
         'http://localhost:5173',
-        // 'https://bibliotheque-frontend.vercel.app',
+        'https://bibliotheque-frontend.vercel.app',
       ],
       methods: 'GET,HEAD,POST,PUT,DELETE,OPTIONS',
       allowedHeaders: 'Content-Type,Accept,Authorization',

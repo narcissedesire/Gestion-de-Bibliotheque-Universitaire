@@ -58,18 +58,23 @@ export class UsersController {
   @Get('/affiche_user')
   @UseGuards(AccessTokenGuard, AuthorizationGuard)
   @DecorRole(typeUser.ADMIN)
-  afficheUser(@Query() query: PaginationParams & { type: typeUser }) {
+  afficheUser(
+    @Query() query: PaginationParams & { type: typeUser; disponible?: string },
+  ) {
     if (query.page && isNaN(Number(query.page))) {
       throw new BadRequestException('La page doit être un nombre');
     }
-    console.log('page :', query.page);
-    console.log('Limit : ', query.limit);
     if (query.limit && isNaN(Number(query.limit))) {
       throw new BadRequestException('La limite doit être un nombre');
     }
     if (query.type && !Object.values(typeUser).includes(query.type)) {
       throw new BadRequestException("Type d'événement invalide");
     }
+
+    let disponible: boolean | undefined;
+    if (query.disponible === 'true') disponible = true;
+    if (query.disponible === 'false') disponible = false;
+
     return this.usersService.afficheUsers(
       {
         page: query.page ? Number(query.page) : 1,
@@ -80,6 +85,7 @@ export class UsersController {
         type: query.type,
       },
       query.type,
+      disponible,
     );
   }
 
@@ -93,6 +99,11 @@ export class UsersController {
   @Put('/update-user/:id')
   updateUser(@Param('id') id: string, @Body() userData: Partial<User>) {
     return this.usersService.updateUser(id, userData);
+  }
+
+  @Put('/update-status-user/:id')
+  updateStatus(@Param('id') id: string, @Body() userData: Partial<User>) {
+    return this.usersService.updateStatusUser(id, userData);
   }
 
   @Delete('/delete-user/:id')

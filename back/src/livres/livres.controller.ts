@@ -54,7 +54,7 @@ export class LivresController {
     return this.livreService.findAllLivres(
       {
         page: query.page ? Number(query.page) : 1,
-        limit: query.limit ? Number(query.limit) : 10,
+        limit: query.limit && Number(query.limit),
         search: query.search?.toLowerCase() || '',
         orderBy: query.orderBy || 'titre',
         orderDirection: query.orderDirection,
