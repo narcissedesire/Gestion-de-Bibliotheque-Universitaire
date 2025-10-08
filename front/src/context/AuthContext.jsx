@@ -1,13 +1,6 @@
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useCallback,
-  useEffect,
-} from "react";
+import React, { createContext, useState, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
-import { useLibrairie } from "./LibrairieContext";
 import { API_URL } from "../../API_URL";
 
 const AuthContext = createContext();
@@ -168,7 +161,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ✅ Méthodes supplémentaires
   const value = {
     user,
     login,

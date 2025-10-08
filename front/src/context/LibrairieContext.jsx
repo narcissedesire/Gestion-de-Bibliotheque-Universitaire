@@ -6,8 +6,6 @@ import { API_URL } from "../../API_URL";
 const LibrairieContext = createContext();
 
 export function LibrairieProvider({ children }) {
-  // const API_URL = "https://gestion-de-bibliotheque-universitaire.onrender.com/";
-
   const [livreAll, setLivreAll] = useState([]);
   const [livrePopulaire, setLivrePopulaire] = useState([]);
   const [emprunts, setEmprunts] = useState([]);
@@ -205,7 +203,7 @@ export function LibrairieProvider({ children }) {
       setLoading(true);
       try {
         const res = await fetch(`${API_URL}/livres/create`, {
-          method: "POST",
+          method: "DELETE",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

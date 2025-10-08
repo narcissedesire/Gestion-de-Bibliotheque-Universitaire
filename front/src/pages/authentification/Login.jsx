@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Loading from "../Loading/Loading";
 import { Link, useNavigate } from "react-router-dom";
+import { API_URL } from "../../../API_URL";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
